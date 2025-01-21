@@ -1,0 +1,41 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int          @id @default(autoincrement())
+  name      String
+  email     String       @unique
+  password  String
+  messages  Message[]    // علاقة مع جدول الرسائل
+  notifications Notification[] // علاقة مع جدول الإشعارات
+}
+
+model Message {
+  id        Int          @id @default(autoincrement())
+  content   String
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id]) // علاقة مع جدول المستخدمين
+  createdAt DateTime     @default(now())
+}
+
+model Notification {
+  id        Int          @id @default(autoincrement())
+  title     String
+  content   String
+  unread    Boolean       @default(true) 
+  type      String?                      
+  userId    Int
+  user      User         @relation(fields: [userId], references: [id])
+  createdAt DateTime     @default(now()) 
+  updatedAt DateTime     @updatedAt      
+
+  @@index([userId])                      
+}
+
+
